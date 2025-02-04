@@ -11,7 +11,7 @@ class CalculatorApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Calculator by Manny',
+      title: 'Calculator by YourName',
       home: const CalculatorScreen(),
       debugShowCheckedModeBanner: false,
     );
@@ -42,15 +42,36 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
           final evaluator = const ExpressionEvaluator();
           var eval = evaluator.eval(exp, {});
 
-          // Check for division by zero (Infinity)
+          // Check for division by zero (or any operation that results in Infinity)
           if (eval is double && eval.isInfinite) {
-            _accumulator = 'Error';
+            _accumulator = 'Erro';
           } else {
             _accumulator = '$_accumulator = $eval';
           }
           _evaluated = true;
         } catch (e) {
-          _accumulator = 'Error';
+          _accumulator = 'Erro';
+          _evaluated = true;
+        }
+      } else if (value == 'x²') {
+        try {
+          // Evaluate the current expression
+          Expression exp = Expression.parse(_accumulator);
+          final evaluator = const ExpressionEvaluator();
+          var eval = evaluator.eval(exp, {});
+
+          // If the result is a number, square it
+          if (eval is num) {
+            var squared = eval * eval;
+            if (squared is double && squared.isInfinite) {
+              _accumulator = 'Erro';
+            } else {
+              _accumulator = '($_accumulator)² = $squared';
+            }
+            _evaluated = true;
+          }
+        } catch (e) {
+          _accumulator = 'Erro';
           _evaluated = true;
         }
       } else {
@@ -88,7 +109,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Calculator by Manny'),
+        title: const Text('Calculator by YourName'),
         centerTitle: true,
       ),
       body: Column(
@@ -107,7 +128,13 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
             ),
           ),
           const Divider(height: 1),
-          // Buttons
+          // New row for the square feature (x²)
+          Row(
+            children: [
+              _buildButton('x²', color: Colors.purple),
+            ],
+          ),
+          // Digit and operator buttons
           Expanded(
             child: Column(
               children: [
